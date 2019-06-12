@@ -11,6 +11,6 @@
   "license": "ISC",
   "dependencies": {
     "miband": "^0.1.4",
-    "node-web-bluetooth": "0.0.8"
+    "webbluetooth": "^1.1.1"
   }
 }
