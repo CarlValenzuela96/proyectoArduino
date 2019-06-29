@@ -17,6 +17,9 @@
     "jsonwebtoken": "^8.5.1",
     "miband": "^0.1.4",
     "mongoose": "^5.6.1",
+    "mosquito": "^0.3.3",
+    "mqtt": "^3.0.0",
+    "node-fetch": "^2.6.0",
     "text-encoding": "^0.7.0",
     "webbluetooth": "^1.1.1"
   }

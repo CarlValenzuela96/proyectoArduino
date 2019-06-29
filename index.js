@@ -1,5 +1,6 @@
 'use strict'
 
+
 const MiBand = require("miband");
 const bluetooth = require("webbluetooth").bluetooth;
 const pulseraController = require('./controllers/pulseraController');
@@ -27,6 +28,8 @@ async function connectDevice() {
 
     let miband = new MiBand(server);
     await miband.init();
+    console.log('Conexion con pulsera establecida.')
+
     global.miband = miband;
     app.use('/auth', authRoutes);
     app.use('/protected', protectedRoutes);
@@ -36,19 +39,30 @@ async function connectDevice() {
       if (err) {
         return console.log(`Error al conectar a base de datos: ${err}`);
       }
-      console.log('conexion a base de datos establecida');
+      console.log('Conexion a base de datos establecida');
 
       //Start backend
       app.listen(config.port, () => {
         console.log(`API REST conrriendo en http://localhost:${config.port}`)
       });
     })
+
     
-    //await pulseraController.getBandInfo(miband);
+    await pulseraController.sendAlert(miband,await pulseraController.getBandInfo(miband));
+    await pulseraController.getRitmoCadiaco(miband);
+    await pulseraController.sendBatteryInfo(miband,await pulseraController.getBandInfo(miband));
     //await pulseraController.tapDevice(miband);
+    
+
+    //await pulseraController.getBandInfo(miband);
+    
 
   } catch (error) {
     console.log("ERROR: ", error);
   }
 }
+
+
+
+
 

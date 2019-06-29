@@ -3,6 +3,7 @@
 const Monitor = require('../models/Monitor');
 const Service = require('../services/services');
 const bcrypt = require('bcrypt-nodejs');
+const fetch = require("node-fetch");
 
 //Para encryptar pass monitor
 const saltRounds = 10;
@@ -27,6 +28,20 @@ function registrarMonitor(req,res){
 
         newMonitor.save((err)=>{
             if(err) return res.status(500).send(err);
+            
+           /*  (async () => {
+                const rawResponse = await fetch('http://endor.ceisufro.cl:8080/api/v1/HrnpIQLJ5pPzRjPQ1g3U/telemetry', {
+                  method: 'POST',
+                  headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                  },
+                  body: JSON.stringify({monitor: "newMonitor"})
+                });
+                const content = await rawResponse.json();
+              
+                console.log(content);
+              })(); */
 
             return res.status(200).send(newMonitor);
         })
