@@ -3,7 +3,6 @@
 const delay = require('delay');
 const mqtt = require('mqtt');
 const config = require('../config');
-const Usuario = require('../models/Usuario');
 
 /**
  * Envia a thingsboard informacion referente a la bateria de la pulsera
@@ -23,52 +22,45 @@ async function sendBatteryInfo(miband, info) {
  */
 async function sendAlert(miband, info) {
   var cont = 0
-  Usuario.findOne({
-    serial_pulsera: info.serial
-  }).exec((err, usuario) => {
+  
+  var alert = {
+    alerta: info.serial
+  };
 
-    if (usuario) {
+  miband.on('button', () => {
 
-      var alert = {
-        alerta: 'Usuario ' + usuario.nombre + ' necesita ayuda'
-      };
+    cont = cont + 1
+    if (cont != 2) {
+      let setCount = async () => {
+        await delay(5000);
+        cont = 0;
+      
+      }
+      setCount();
+    }
+    
+    if (cont == 2) {
 
-      miband.on('button', () => {
+      cont = 0;
+      var client = mqtt.connect(config.mqttIp, {
+        username: config.mqttToken
+      })
 
-        cont = cont + 1
-        if (cont != 2) {
-          let setCount = async () => {
-            await delay(5000);
-            cont = 0;
-          
-          }
-          setCount();
-        }
-        
-        if (cont == 2) {
+      client.on('connect', function () {
+        //client.subscribe('v1/devices/me/telemetry')
+        //client.publish('v1/devices/me/telemetry', JSON.stringify(alert))
+        client.subscribe('v1/devices/me/attributes/response/+')
+        client.publish('v1/devices/me/attributes/request/1', JSON.stringify(alert))
+        //client.end()
+      })
 
-          cont = 0;
-          var client = mqtt.connect(config.mqttIp, {
-            username: config.mqttToken
-          })
-
-          client.on('connect', function () {
-            client.subscribe('v1/devices/me/telemetry')
-            client.publish('v1/devices/me/telemetry', JSON.stringify(alert))
-            client.end()
-          })
-
-          client.on('message', function (topic, message) {
-            console.log('response.topic: ' + topic)
-            console.log('response.body: ' + message.toString())
-            client.end()
-          })
-
-        }
-      });
+      client.on('message', function (topic, message) {
+        console.log('response.topic: ' + topic)
+        console.log('response.body: ' + message.toString())
+        client.end()
+      })
 
     }
-
   });
 
   try {
