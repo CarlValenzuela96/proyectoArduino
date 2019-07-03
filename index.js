@@ -24,7 +24,7 @@ async function connectDevice() {
     
     await pulseraController.sendAlert(miband,await pulseraController.getBandInfo(miband));
     await pulseraController.getRitmoCadiaco(miband);
-    await pulseraController.sendBatteryInfo(miband,await pulseraController.getBandInfo(miband));
+    //await pulseraController.sendBatteryInfo(miband,await pulseraController.getBandInfo(miband));
     //await pulseraController.tapDevice(miband);
     
 

@@ -42,16 +42,18 @@ async function sendAlert(miband, info) {
     if (cont == 2) {
 
       cont = 0;
+      //conexion mqtt
       var client = mqtt.connect(config.mqttIp, {
         username: config.mqttToken
       })
 
       client.on('connect', function () {
-        //client.subscribe('v1/devices/me/telemetry')
-        //client.publish('v1/devices/me/telemetry', JSON.stringify(alert))
-        client.subscribe('v1/devices/me/attributes/response/+')
-        client.publish('v1/devices/me/attributes/request/1', JSON.stringify(alert))
-        //client.end()
+        client.subscribe('v1/devices/me/telemetry')
+        client.publish('v1/devices/me/telemetry', JSON.stringify(alert))
+        console.log("alerta enviada");
+        //client.subscribe('v1/devices/me/attributes/response/+')
+        //client.publish('v1/devices/me/attributes', JSON.stringify(alert))
+        client.end()
       })
 
       client.on('message', function (topic, message) {
@@ -85,6 +87,7 @@ async function tapDevice(miband) {
     var tap = {
       tap: true
     }
+    //conexion mqtt
     var client = mqtt.connect(config.mqttIp, {
       username: config.mqttToken
     })
@@ -127,13 +130,16 @@ async function getRitmoCadiaco(miband) {
       heart_rate: rate
     }
 
+    //conexion mqtt
     var client = mqtt.connect(config.mqttIp, {
       username: config.mqttToken
     })
-
+    
     client.on('connect', function () {
+      console.log(rate)
       client.subscribe('v1/devices/me/telemetry')
       client.publish('v1/devices/me/telemetry', JSON.stringify(heart_rate))
+      client.end()
     })
 
 
@@ -144,7 +150,7 @@ async function getRitmoCadiaco(miband) {
     })
   })
   await miband.hrmStart();
-  await delay(30000);
+  await delay(3000000);//30 min
   await miband.hrmStop();
 }
 
